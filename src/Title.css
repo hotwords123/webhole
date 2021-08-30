@@ -23,6 +23,7 @@
 }
 
 .control-btn {
+    position: relative;
     flex: 0 0 4.5em;
     text-align: center;
     color: black;
@@ -56,6 +57,23 @@
 .root-dark-mode .control-btn:hover {
     color: var(--foreground-dark);
     opacity: 1;
+}
+
+.control-btn-dot {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+.control-btn-dot {
+    background-color: #ff9988;
+}
+.root-dark-mode .control-btn-dot {
+    background-color: #ee8877;
 }
 
 .control-search {

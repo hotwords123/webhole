@@ -28,6 +28,10 @@ const MESSAGE_TYPE_MAP = {
 // todo: change icon to bell (control bar)
 // todo (low): choose what to show
 
+export function read_latest_id() {
+  return parseInt(localStorage.getItem(LATEST_MESSAGE_KEY)) || 0;
+}
+
 export class PushMessageViewer extends PureComponent {
   constructor(props) {
     super(props);
@@ -67,7 +71,7 @@ export class PushMessageViewer extends PureComponent {
             this.setState((prev, props) => {
               const visited = new Set(prev.messages.map(msg => msg.id));
 
-              const latest_id = json.data.reduce((x, msg) => Math.max(x, msg.id), this.read_latest_id());
+              const latest_id = json.data.reduce((x, msg) => Math.max(x, msg.id), read_latest_id());
               localStorage.setItem(LATEST_MESSAGE_KEY, latest_id);
 
               return {
@@ -93,15 +97,11 @@ export class PushMessageViewer extends PureComponent {
     this.load_page(this.state.loaded_pages + 1);
   }
 
-  read_latest_id() {
-    return parseInt(localStorage.getItem(LATEST_MESSAGE_KEY)) || 0;
-  }
-
   reload_all() {
     this.setState({
       loaded_pages: 0,
       messages: [],
-      latest_id: this.read_latest_id()
+      latest_id: read_latest_id()
     }, () => this.load_more_pages());
   }
 

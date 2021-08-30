@@ -30,6 +30,7 @@ const DEFAULT_CONFIG = {
   fold: true,
   block_words: [],
   auto_order: true,
+  polling_interval: "30",
 };
 
 export function load_config() {
@@ -160,17 +161,17 @@ class ConfigBackground extends PureComponent {
   }
 }
 
-class ConfigColorScheme extends PureComponent {
+class ConfigSelect extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      color_scheme: window.config.color_scheme,
+      value: window.config[props.id],
     };
   }
 
   save_changes() {
     this.props.callback({
-      color_scheme: this.state.color_scheme,
+      [this.props.id]: this.state.value,
     });
   }
 
@@ -178,7 +179,7 @@ class ConfigColorScheme extends PureComponent {
     let value = e.target.value;
     this.setState(
       {
-        color_scheme: value,
+        value: value,
       },
       this.save_changes.bind(this),
     );
@@ -188,21 +189,19 @@ class ConfigColorScheme extends PureComponent {
     return (
       <div>
         <p>
-          <b>夜间模式：</b>
+          <b>{this.props.name}：</b>
           <select
             className="config-select"
-            value={this.state.color_scheme}
+            value={this.state.value}
             onChange={this.on_select.bind(this)}
           >
-            <option value="default">跟随系统</option>
-            <option value="light">始终浅色模式</option>
-            <option value="dark">始终深色模式</option>
+            {this.props.options.map(({ value, text }) =>
+              <option key={value} value={value}>{text}</option>
+            )}
           </select>
-          &nbsp;<small>#color_scheme</small>
+          &nbsp;<small>#{this.props.id}</small>
         </p>
-        <p className="config-description">
-          选择浅色或深色模式，深色模式下将会调暗图片亮度
-        </p>
+        <p className="config-description">{this.props.description}</p>
       </div>
     );
   }
@@ -390,8 +389,15 @@ export class ConfigUI extends PureComponent {
             callback={this.save_changes_bound}
           />
           <hr />
-          <ConfigColorScheme
-            id="color-scheme"
+          <ConfigSelect
+            id="color_scheme"
+            name="夜间模式"
+            description="选择浅色或深色模式，深色模式下将会调暗图片亮度"
+            options={[
+              { value: "default", text: "跟随系统" },
+              { value: "light", text: "始终浅色模式" },
+              { value: "dark", text: "始终深色模式" },
+            ]}
             callback={this.save_changes_bound}
           />
           <hr />
@@ -435,6 +441,21 @@ export class ConfigUI extends PureComponent {
             id="auto_order"
             name="自动倒序"
             description="从消息列表打开树洞时将评论设为倒序显示"
+          />
+          <hr />
+          <ConfigSelect
+            id="polling_interval"
+            name="更新频率"
+            description="从服务器自动获取新消息的频率，或者禁用这项功能"
+            options={[
+              { value: "15", text: "每 15 秒" },
+              { value: "30", text: "每 30 秒" },
+              { value: "60", text: "每分钟" },
+              { value: "120", text: "每 2 分钟" },
+              { value: "300", text: "每 5 分钟" },
+              { value: "-1", text: "禁用" },
+            ]}
+            callback={this.save_changes_bound}
           />
           {localStorage['hide_announcement'] && (
             <div>
