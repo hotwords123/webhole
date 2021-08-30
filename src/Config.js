@@ -29,6 +29,7 @@ const DEFAULT_CONFIG = {
   color_scheme: 'default',
   fold: true,
   block_words: [],
+  auto_order: true,
 };
 
 export function load_config() {
@@ -427,6 +428,13 @@ export class ConfigUI extends PureComponent {
             id="fold"
             name="折叠树洞"
             description="在时间线中折叠可能引起不适的树洞"
+          />
+          <hr />
+          <ConfigSwitch
+            callback={this.save_changes_bound}
+            id="auto_order"
+            name="自动倒序"
+            description="从消息列表打开树洞时将评论设为倒序显示"
           />
           {localStorage['hide_announcement'] && (
             <div>

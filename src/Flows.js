@@ -1275,7 +1275,7 @@ class FlowItemRow extends PureComponent {
         show_sidebar={this.props.show_sidebar}
         color_picker={this.color_picker}
         freshFirst={freshFirst}
-        reverse={this.props.from_msg}
+        reverse={config.auto_order && this.props.from_msg}
       />,
     );
   }
