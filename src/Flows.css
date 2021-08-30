@@ -173,6 +173,14 @@
 
 .left-container .flow-item-row {
   cursor: default;
+  transition: background-color .15s;
+}
+
+.left-container .flow-item-row:hover {
+  background-color: rgba(255, 255, 255, .15);
+}
+.left-container .flow-item-row:active {
+  background-color: rgba(255, 255, 255, .3);
 }
 
 .box-header,
