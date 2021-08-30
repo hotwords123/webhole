@@ -89,6 +89,13 @@ export class PushMessageViewer extends PureComponent {
     this.load_page(this.state.loaded_pages + 1);
   }
 
+  reload_all() {
+    this.setState({
+      loaded_pages: 0,
+      messages: []
+    }, () => this.load_more_pages());
+  }
+
   on_scroll(evt) {
     const target = evt.target;
     const avail = target.scrollHeight - target.scrollTop - target.clientHeight;
@@ -98,10 +105,16 @@ export class PushMessageViewer extends PureComponent {
   render() {
     return (
       <div ref={this.root} className="push-message-container">
+        <div className="box box-tip push-message-hover-bar">
+          <a onClick={() => this.reload_all()}>
+            <span className="icon icon-refresh" />
+            <label>刷新</label>
+          </a>
+        </div>
         {this.state.messages.map((msg) => (
           <LazyLoad
             key={msg.id}
-            offset={1500}
+            offset={500}
             height="5em"
             overflow={true}
             once={true}
