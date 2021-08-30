@@ -132,7 +132,7 @@ export class PushMessageViewer extends PureComponent {
             <label>刷新</label>
           </a>
         </div>
-        {this.state.messages.map((msg) => (
+        {this.state.messages.map((msg, index, list) => (
           <LazyLoad
             key={msg.id}
             offset={500}
@@ -146,6 +146,7 @@ export class PushMessageViewer extends PureComponent {
               token={this.props.token}
               show_sidebar={this.props.show_sidebar}
               color_picker={this.get_color_picker(msg.pid)}
+              cascade={!!msg.pid && index + 1 < list.length && list[index + 1].pid === msg.pid}
             />
           </LazyLoad>
         ))}
@@ -199,7 +200,12 @@ class PushMessage extends PureComponent {
     }
 
     return (
-      <div className="push-message-item">
+      <div
+        className={
+          "push-message-item" +
+          (this.props.cascade ? ' cascade' : '')
+        }
+      >
         <div key={msg.id} className="box push-message-detail" style={style}>
           {this.props.is_new &&
             <div className="flow-item-dot flow-item-dot-message" />
@@ -210,7 +216,7 @@ class PushMessage extends PureComponent {
           </div>
           <div className="box-content">{content}</div>
         </div>
-        {msg.pid &&
+        {msg.pid && !this.props.cascade &&
           <FlowItemQuote
             pid={msg.pid}
             from_msg={true}

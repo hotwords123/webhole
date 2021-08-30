@@ -6,3 +6,7 @@
 .push-message-detail .flow-item-dot {
   display: block;
 }
+
+.push-message-item:not(.cascade)+.push-message-item {
+  margin-top: 2em;
+}
