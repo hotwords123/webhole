@@ -1530,7 +1530,7 @@ export class FlowItemQuote extends PureComponent {
       error_msg: null,
       info: null,
     };
-    this.color_picker = new ColorPicker();
+    this.color_picker = this.props.color_picker || new ColorPicker();
   }
 
   componentDidMount() {

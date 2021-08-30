@@ -1,9 +1,10 @@
 import React, { createRef, PureComponent } from 'react';
 import { API } from './flows_api';
-import { Time } from './Common';
+import { Time, HighlightedMarkdown } from './Common';
 import LazyLoad from './react-lazyload/src';
-import { FlowItemQuote } from './Flows';
+import { FlowItemQuote, load_single_meta } from './Flows';
 import './PushMessage.css';
+import { ColorPicker } from './color_picker';
 
 /**
  * @typedef {{
@@ -41,6 +42,7 @@ export class PushMessageViewer extends PureComponent {
     };
     this.root = createRef();
     this.on_scroll_bound = this.on_scroll.bind(this);
+    this.color_picker_map = new Map();
   }
 
   componentDidMount() {
@@ -109,6 +111,17 @@ export class PushMessageViewer extends PureComponent {
     if (avail < target.clientHeight) this.load_more_pages();
   }
 
+  get_color_picker(pid) {
+    const map = this.color_picker_map;
+    if (map.has(pid)) {
+      return map.get(pid);
+    } else {
+      const color_picker = new ColorPicker();
+      map.set(pid, color_picker);
+      return color_picker;
+    }
+  }
+
   render() {
     console.info('render, latest = ' + this.state.latest_id);
     return (
@@ -132,6 +145,7 @@ export class PushMessageViewer extends PureComponent {
               msg={msg}
               token={this.props.token}
               show_sidebar={this.props.show_sidebar}
+              color_picker={this.get_color_picker(msg.pid)}
             />
           </LazyLoad>
         ))}
@@ -154,14 +168,39 @@ export class PushMessageViewer extends PureComponent {
 
 class PushMessage extends PureComponent {
   render() {
+    const show_pid = load_single_meta(this.props.show_sidebar, this.props.token);
+
     /** @type {PushMessageData} */
     const msg = this.props.msg;
+    let content, style = null;
 
-    // todo: render markdown
+    if (typeof msg.pid === 'number') {
+      // markdown
+
+      // an ugly way to figure out the author
+      const result = msg.title.match(/^(.+)回复了树洞#(\d+)$/);
+      const author = result ? result[1] : '';
+      const colors = this.props.color_picker.get(author);
+
+      content = <HighlightedMarkdown
+        author={'[' + author + ']'}
+        text={msg.body}
+        color_picker={this.props.color_picker}
+        show_pid={show_pid}
+      />;
+
+      style = {
+        '--box-bgcolor-light': colors[0],
+        '--box-bgcolor-dark': colors[1],
+      };
+    } else {
+      // plain text
+      content = <pre>{msg.body}</pre>;
+    }
 
     return (
       <div className="push-message-item">
-        <div className="box push-message-detail" key={msg.timestamp}>
+        <div key={msg.id} className="box push-message-detail" style={style}>
           {this.props.is_new &&
             <div className="flow-item-dot flow-item-dot-message" />
           }
@@ -169,9 +208,7 @@ class PushMessage extends PureComponent {
             <Time stamp={msg.timestamp} short={true} />
             <b>{msg.title}</b>
           </div>
-          <div className="box-content">
-            <pre>{msg.body}</pre>
-          </div>
+          <div className="box-content">{content}</div>
         </div>
         {msg.pid &&
           <FlowItemQuote
@@ -180,6 +217,7 @@ class PushMessage extends PureComponent {
             show_sidebar={this.props.show_sidebar}
             token={this.props.token}
             search_param={''}
+            color_picker={this.props.color_picker}
           />
         }
       </div>
