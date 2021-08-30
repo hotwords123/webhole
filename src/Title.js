@@ -4,6 +4,7 @@ import { InfoSidebar, PostForm } from './UserAction';
 import { TokenCtx } from './UserAction';
 
 import './Title.css';
+import { PushMessageViewer } from './PushMessage';
 
 const flag_re = /^\/\/setflag ([a-zA-Z0-9_]+)=(.*)$/;
 
@@ -175,6 +176,23 @@ class ControlBar extends PureComponent {
               >
                 <span className="icon icon-plus" />
                 <span className="control-btn-label">发表</span>
+              </a>
+            )}
+            {!!token && (
+              /* use bell icon here, update icomoon */
+              <a
+                className="no-underline control-btn"
+                onClick={() => {
+                  this.props.show_sidebar(
+                    '消息列表',
+                    <PushMessageViewer
+                      token={token}
+                    />,
+                  );
+                }}
+              >
+                <span className="icon icon-fire" />
+                <span className="control-btn-label">消息</span>
               </a>
             )}
           </div>

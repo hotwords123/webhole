@@ -187,4 +187,16 @@ export const API = {
     );
     return handle_response(response);
   },
+
+  get_messages: async (page, token, push_only = false) => {
+    let response = await fetch(
+      API_ROOT + `contents/my_msgs?page=${page}&push_only=${push_only ? 1 : 0}` + API_VERSION_PARAM(),
+      {
+        headers: {
+          TOKEN: token,
+        },
+      },
+    );
+    return handle_response(response);
+  },
 };
