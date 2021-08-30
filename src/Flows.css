@@ -240,6 +240,13 @@
   background-color: #99ccee;
 }
 
+.flow-item-dot-message {
+  background-color: #ffbbcc;
+}
+.root-dark-mode .flow-item-dot-message {
+  background-color: #eeaabb;
+}
+
 .left-container .flow-item-dot {
   display: block;
 }

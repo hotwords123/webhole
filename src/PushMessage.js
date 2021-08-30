@@ -25,7 +25,6 @@ const MESSAGE_TYPE_MAP = {
 };
 
 // todo: change icon to bell (control bar)
-// todo: allow refresh (top bar)
 // todo (low): choose what to show
 
 export class PushMessageViewer extends PureComponent {
@@ -38,14 +37,14 @@ export class PushMessageViewer extends PureComponent {
       /** @type {PushMessageData[]} */
       messages: [],
       error_msg: null,
-      latest_id: parseInt(localStorage.getItem(LATEST_MESSAGE_KEY)) || 0
+      latest_id: 0
     };
     this.root = createRef();
     this.on_scroll_bound = this.on_scroll.bind(this);
   }
 
   componentDidMount() {
-    this.load_more_pages();
+    this.reload_all();
     this.root.current.parentNode.addEventListener("scroll", this.on_scroll_bound, false);
   }
 
@@ -61,12 +60,14 @@ export class PushMessageViewer extends PureComponent {
         loading_status: 'loading',
       },
       () => {
-        // todo: add dot if new
-
         API.get_messages(page, this.props.token, false)
           .then((json) => {
             this.setState((prev, props) => {
               const visited = new Set(prev.messages.map(msg => msg.id));
+
+              const latest_id = json.data.reduce((x, msg) => Math.max(x, msg.id), this.read_latest_id());
+              localStorage.setItem(LATEST_MESSAGE_KEY, latest_id);
+
               return {
                 loading_status: 'done',
                 loaded_pages: page,
@@ -90,10 +91,15 @@ export class PushMessageViewer extends PureComponent {
     this.load_page(this.state.loaded_pages + 1);
   }
 
+  read_latest_id() {
+    return parseInt(localStorage.getItem(LATEST_MESSAGE_KEY)) || 0;
+  }
+
   reload_all() {
     this.setState({
       loaded_pages: 0,
-      messages: []
+      messages: [],
+      latest_id: this.read_latest_id()
     }, () => this.load_more_pages());
   }
 
@@ -104,6 +110,7 @@ export class PushMessageViewer extends PureComponent {
   }
 
   render() {
+    console.info('render, latest = ' + this.state.latest_id);
     return (
       <div ref={this.root} className="push-message-container">
         <div className="box box-tip push-message-hover-bar">
@@ -120,7 +127,12 @@ export class PushMessageViewer extends PureComponent {
             overflow={true}
             once={true}
           >
-            <PushMessage msg={msg} token={this.props.token} show_sidebar={this.props.show_sidebar} />
+            <PushMessage
+              is_new={!!this.state.latest_id && msg.id > this.state.latest_id}
+              msg={msg}
+              token={this.props.token}
+              show_sidebar={this.props.show_sidebar}
+            />
           </LazyLoad>
         ))}
         {this.state.loading_status === 'done' && this.state.all_loaded &&
@@ -150,6 +162,9 @@ class PushMessage extends PureComponent {
     return (
       <div className="push-message-item">
         <div className="box push-message-detail" key={msg.timestamp}>
+          {this.props.is_new &&
+            <div className="flow-item-dot flow-item-dot-message" />
+          }
           <div className="box-header">
             <Time stamp={msg.timestamp} short={true} />
             <b>{msg.title}</b>
