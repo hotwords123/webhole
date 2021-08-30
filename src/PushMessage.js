@@ -2,6 +2,7 @@ import React, { createRef, PureComponent } from 'react';
 import { API } from './flows_api';
 import { Time } from './Common';
 import LazyLoad from './react-lazyload/src';
+import { FlowItemQuote } from './Flows';
 
 /**
  * @typedef {{
@@ -17,11 +18,12 @@ import LazyLoad from './react-lazyload/src';
 
 const LATEST_MESSAGE_KEY = '_LATEST_MESSAGE_ID';
 const MESSAGE_TYPE_MAP = {
-  '1': '系统消息',
-  '2': '回复我的',
-  '4': '我关注的'
+  1: '系统消息',
+  2: '回复我的',
+  4: '我关注的'
 };
 
+// todo: change icon to bell (control bar)
 // todo: allow refresh (top bar)
 // todo (low): choose what to show
 
@@ -104,7 +106,7 @@ export class PushMessageViewer extends PureComponent {
             overflow={true}
             once={true}
           >
-            <PushMessage msg={msg} />
+            <PushMessage msg={msg} token={this.props.token} show_sidebar={this.props.show_sidebar} />
           </LazyLoad>
         ))}
         {this.state.loading_status === 'done' && this.state.all_loaded &&
@@ -130,17 +132,27 @@ class PushMessage extends PureComponent {
     const msg = this.props.msg;
 
     // todo: render markdown
-    // todo: render related post
 
     return (
-      <div className="box push-message-item" key={msg.timestamp}>
-        <div className="box-header">
-          <Time stamp={msg.timestamp} short={true} />
-          <b>{msg.title}</b>
+      <div className="push-message-item">
+        <div className="box push-message-detail" key={msg.timestamp}>
+          <div className="box-header">
+            <Time stamp={msg.timestamp} short={true} />
+            <b>{msg.title}</b>
+          </div>
+          <div className="box-content">
+            <pre>{msg.body}</pre>
+          </div>
         </div>
-        <div className="box-content">
-          <pre>{msg.body}</pre>
-        </div>
+        {msg.pid &&
+          <FlowItemQuote
+            pid={msg.pid}
+            from_msg={true}
+            show_sidebar={this.props.show_sidebar}
+            token={this.props.token}
+            search_param={''}
+          />
+        }
       </div>
     );
   }

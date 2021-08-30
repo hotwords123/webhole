@@ -183,6 +183,10 @@
   background-color: rgba(255, 255, 255, .3);
 }
 
+.push-message-item .flow-item-row {
+  cursor: default;
+}
+
 .box-header,
 .box-footer {
   font-size: 0.8em;
@@ -288,6 +292,10 @@
   margin-left: 2.5em;
   max-height: 15em;
   overflow-y: hidden;
+}
+
+.flow-item-compact > .box {
+  max-height: 10em;
 }
 
 .flow-item-quote .flow-item-dot,

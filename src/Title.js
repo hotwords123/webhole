@@ -187,6 +187,7 @@ class ControlBar extends PureComponent {
                     '消息列表',
                     <PushMessageViewer
                       token={token}
+                      show_sidebar={this.props.show_sidebar}
                     />,
                   );
                 }}

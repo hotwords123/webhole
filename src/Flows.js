@@ -687,7 +687,7 @@ class FlowItem extends PureComponent {
     let props = this.props;
     let voteOptionNum = Object.keys(props.info.vote).length;
     return (
-      <div className={'flow-item' + (props.is_quote ? ' flow-item-quote' : '')}>
+      <div className={'flow-item' + (props.is_quote ? ' flow-item-quote' : '') + (props.from_msg ? ' flow-item-compact' : '')}>
         {!!props.is_quote && (
           <div className="quote-tip black-outline">
             <div>
@@ -770,7 +770,7 @@ class FlowSidebar extends PureComponent {
       loading_status: 'done',
       error_msg: null,
       filter_name: null,
-      rev: false,
+      rev: !!this.props.reverse,
     };
     this.color_picker = props.color_picker;
     this.syncState = props.sync_state || (() => {});
@@ -1275,6 +1275,7 @@ class FlowItemRow extends PureComponent {
         show_sidebar={this.props.show_sidebar}
         color_picker={this.color_picker}
         freshFirst={freshFirst}
+        reverse={this.props.from_msg}
       />,
     );
   }
@@ -1318,7 +1319,9 @@ class FlowItemRow extends PureComponent {
 
     let showing_replies;
     let shown_results = 0;
-    if (
+    if (this.props.from_msg) {
+      showing_replies = [];
+    } else if (
       !this.props.is_quote &&
       this.props.search_param &&
       this.props.search_param !== '' + this.state.info.pid &&
@@ -1401,6 +1404,7 @@ class FlowItemRow extends PureComponent {
           info={this.state.info}
           in_sidebar={false}
           is_quote={this.props.is_quote}
+          from_msg={this.props.from_msg}
           color_picker={this.color_picker}
           search_param={this.props.search_param}
           show_pid={show_pid}
@@ -1429,31 +1433,33 @@ class FlowItemRow extends PureComponent {
             </>
           }
         />
-        <div className="flow-reply-row">
-          {this.state.reply_status === 'loading' && (
-            <div className="box box-tip">加载中</div>
-          )}
-          {this.state.reply_status === 'failed' && (
-            <div className="box box-tip">
-              <p>
-                <a
-                  onClick={() => {
-                    this.load_replies();
-                  }}
-                >
-                  重新加载评论
-                </a>
-              </p>
-              <p>{this.state.reply_error}</p>
-            </div>
-          )}
-          {showing_replies}
-          {this.state.info.reply > shown_results && (
-            <div className="box box-tip">
-              还有 {this.state.info.reply - shown_results} 条
-            </div>
-          )}
-        </div>
+        {!this.props.from_msg && (
+          <div className="flow-reply-row">
+            {this.state.reply_status === 'loading' && (
+              <div className="box box-tip">加载中</div>
+            )}
+            {this.state.reply_status === 'failed' && (
+              <div className="box box-tip">
+                <p>
+                  <a
+                    onClick={() => {
+                      this.load_replies();
+                    }}
+                  >
+                    重新加载评论
+                  </a>
+                </p>
+                <p>{this.state.reply_error}</p>
+              </div>
+            )}
+            {showing_replies}
+            {this.state.info.reply > shown_results && (
+              <div className="box box-tip">
+                还有 {this.state.info.reply - shown_results} 条
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
 
@@ -1516,7 +1522,7 @@ class FlowItemRow extends PureComponent {
   }
 }
 
-class FlowItemQuote extends PureComponent {
+export class FlowItemQuote extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -1592,6 +1598,7 @@ class FlowItemQuote extends PureComponent {
           search_param={this.props.search_param}
           token={this.props.token}
           is_quote={true}
+          from_msg={!!this.props.from_msg}
         />
       );
   }
