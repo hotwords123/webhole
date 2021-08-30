@@ -3,6 +3,7 @@ import { API } from './flows_api';
 import { Time } from './Common';
 import LazyLoad from './react-lazyload/src';
 import { FlowItemQuote } from './Flows';
+import './PushMessage.css';
 
 /**
  * @typedef {{

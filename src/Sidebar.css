@@ -70,6 +70,10 @@
     animation: sidebar-initial .25s linear; /* skip initial animation */
 }
 
+.sidebar-no-scroll::-webkit-scrollbar {
+    display: none;
+}
+
 @keyframes sidebar-fadeout {
     from {
         visibility: visible;

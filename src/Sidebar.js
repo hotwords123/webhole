@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { PushMessageViewer } from './PushMessage';
 import './Sidebar.css';
 
 export class Sidebar extends PureComponent {
@@ -27,7 +28,8 @@ export class Sidebar extends PureComponent {
               'sidebar-content ' +
               (i === this.props.stack.length - 1
                 ? 'sidebar-content-show'
-                : 'sidebar-content-hide')
+                : 'sidebar-content-hide') +
+              (content.type === PushMessageViewer ? ' sidebar-no-scroll' : '')
             }
           >
             {content}
