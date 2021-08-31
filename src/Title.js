@@ -122,7 +122,6 @@ class ControlBar extends PureComponent {
   }
 
   fetch_messages() {
-    console.info(this.props)
     if (this.state.has_new_message) return;
     API.get_messages(1, this.props.token, true)
       .then(json => {

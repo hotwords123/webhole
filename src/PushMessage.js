@@ -123,7 +123,6 @@ export class PushMessageViewer extends PureComponent {
   }
 
   render() {
-    console.info('render, latest = ' + this.state.latest_id);
     return (
       <div ref={this.root} className="push-message-container">
         <div className="box box-tip push-message-hover-bar">
