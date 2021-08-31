@@ -30,7 +30,7 @@ const DEFAULT_CONFIG = {
   fold: true,
   block_words: [],
   auto_order: true,
-  polling_interval: "30",
+  polling_interval: '30',
 };
 
 export function load_config() {
@@ -195,9 +195,11 @@ class ConfigSelect extends PureComponent {
             value={this.state.value}
             onChange={this.on_select.bind(this)}
           >
-            {this.props.options.map(({ value, text }) =>
-              <option key={value} value={value}>{text}</option>
-            )}
+            {this.props.options.map(({ value, text }) => (
+              <option key={value} value={value}>
+                {text}
+              </option>
+            ))}
           </select>
           &nbsp;<small>#{this.props.id}</small>
         </p>
@@ -394,9 +396,9 @@ export class ConfigUI extends PureComponent {
             name="夜间模式"
             description="选择浅色或深色模式，深色模式下将会调暗图片亮度"
             options={[
-              { value: "default", text: "跟随系统" },
-              { value: "light", text: "始终浅色模式" },
-              { value: "dark", text: "始终深色模式" },
+              { value: 'default', text: '跟随系统' },
+              { value: 'light', text: '始终浅色模式' },
+              { value: 'dark', text: '始终深色模式' },
             ]}
             callback={this.save_changes_bound}
           />
@@ -448,12 +450,12 @@ export class ConfigUI extends PureComponent {
             name="更新频率"
             description="从服务器自动获取新消息的频率，或者禁用这项功能"
             options={[
-              { value: "15", text: "每 15 秒" },
-              { value: "30", text: "每 30 秒" },
-              { value: "60", text: "每分钟" },
-              { value: "120", text: "每 2 分钟" },
-              { value: "300", text: "每 5 分钟" },
-              { value: "-1", text: "禁用" },
+              { value: '15', text: '每 15 秒' },
+              { value: '30', text: '每 30 秒' },
+              { value: '60', text: '每分钟' },
+              { value: '120', text: '每 2 分钟' },
+              { value: '300', text: '每 5 分钟' },
+              { value: '-1', text: '禁用' },
             ]}
             callback={this.save_changes_bound}
           />

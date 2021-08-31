@@ -176,10 +176,8 @@ export const API = {
 
   get_attention: async (page, token) => {
     let response = await fetch(
-      API_ROOT +
-        'contents/post/attentions?page=' +
-        page +
-        API_VERSION_PARAM(), {
+      API_ROOT + 'contents/post/attentions?page=' + page + API_VERSION_PARAM(),
+      {
         headers: {
           TOKEN: token,
         },
@@ -190,7 +188,9 @@ export const API = {
 
   get_messages: async (page, token, push_only = false) => {
     let response = await fetch(
-      API_ROOT + `contents/my_msgs?page=${page}&push_only=${push_only ? 1 : 0}` + API_VERSION_PARAM(),
+      API_ROOT +
+        `contents/my_msgs?page=${page}&push_only=${push_only ? 1 : 0}` +
+        API_VERSION_PARAM(),
       {
         headers: {
           TOKEN: token,

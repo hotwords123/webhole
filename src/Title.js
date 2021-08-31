@@ -112,8 +112,7 @@ class ControlBar extends PureComponent {
   }
 
   setup_polling_timer() {
-    if (this.polling_timer)
-      clearInterval(this.polling_timer);
+    if (this.polling_timer) clearInterval(this.polling_timer);
     const interval = parseInt(config.polling_interval);
     if (interval > 0) {
       setInterval(this.fetch_messages_bound, interval * 1000);
@@ -124,17 +123,17 @@ class ControlBar extends PureComponent {
   fetch_messages() {
     if (this.state.has_new_message) return;
     API.get_messages(1, this.props.token, true)
-      .then(json => {
+      .then((json) => {
         const prev_lastet_id = read_latest_id();
-        const lastet_id = Math.max(...json.data.map(msg => msg.id));
+        const lastet_id = Math.max(...json.data.map((msg) => msg.id));
 
         if (!!prev_lastet_id && lastet_id > prev_lastet_id) {
           this.setState({
-            has_new_message: true
+            has_new_message: true,
           });
         }
       })
-      .catch(err => console.error('Failed to fetch messages', err));
+      .catch((err) => console.error('Failed to fetch messages', err));
   }
 
   render() {
@@ -225,9 +224,9 @@ class ControlBar extends PureComponent {
                   );
                 }}
               >
-                {this.state.has_new_message &&
+                {this.state.has_new_message && (
                   <div className="control-btn-dot"></div>
-                }
+                )}
                 <span className="icon icon-fire" />
                 <span className="control-btn-label">消息</span>
               </a>
@@ -259,14 +258,14 @@ export function Title(props) {
           </p>
         </div>
         <TokenCtx.Consumer>
-          {({ value: token }) => 
+          {({ value: token }) => (
             <ControlBar
               show_sidebar={props.show_sidebar}
               set_mode={props.set_mode}
               mode={props.mode}
               token={token}
-            /> 
-          }
+            />
+          )}
         </TokenCtx.Consumer>
       </div>
     </div>

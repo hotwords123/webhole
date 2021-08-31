@@ -687,7 +687,13 @@ class FlowItem extends PureComponent {
     let props = this.props;
     let voteOptionNum = Object.keys(props.info.vote).length;
     return (
-      <div className={'flow-item' + (props.is_quote ? ' flow-item-quote' : '') + (props.from_msg ? ' flow-item-compact' : '')}>
+      <div
+        className={
+          'flow-item' +
+          (props.is_quote ? ' flow-item-quote' : '') +
+          (props.from_msg ? ' flow-item-compact' : '')
+        }
+      >
         {!!props.is_quote && (
           <div className="quote-tip black-outline">
             <div>

@@ -22,7 +22,7 @@ const LATEST_MESSAGE_KEY = '_LATEST_MESSAGE_ID';
 const MESSAGE_TYPE_MAP = {
   1: '系统消息',
   2: '回复我的',
-  4: '我关注的'
+  4: '我关注的',
 };
 
 // todo: change icon to bell (control bar)
@@ -42,7 +42,7 @@ export class PushMessageViewer extends PureComponent {
       /** @type {PushMessageData[]} */
       messages: [],
       error_msg: null,
-      latest_id: 0
+      latest_id: 0,
     };
     this.root = createRef();
     this.on_scroll_bound = this.on_scroll.bind(this);
@@ -51,11 +51,19 @@ export class PushMessageViewer extends PureComponent {
 
   componentDidMount() {
     this.reload_all();
-    this.root.current.parentNode.addEventListener("scroll", this.on_scroll_bound, false);
+    this.root.current.parentNode.addEventListener(
+      'scroll',
+      this.on_scroll_bound,
+      false,
+    );
   }
 
   componentWillUnmount() {
-    this.root.current.parentNode.removeEventListener("scroll", this.on_scroll_bound, false);
+    this.root.current.parentNode.removeEventListener(
+      'scroll',
+      this.on_scroll_bound,
+      false,
+    );
   }
 
   load_page(page) {
@@ -69,16 +77,21 @@ export class PushMessageViewer extends PureComponent {
         API.get_messages(page, this.props.token, false)
           .then((json) => {
             this.setState((prev, props) => {
-              const visited = new Set(prev.messages.map(msg => msg.id));
+              const visited = new Set(prev.messages.map((msg) => msg.id));
 
-              const latest_id = json.data.reduce((x, msg) => Math.max(x, msg.id), read_latest_id());
+              const latest_id = json.data.reduce(
+                (x, msg) => Math.max(x, msg.id),
+                read_latest_id(),
+              );
               localStorage.setItem(LATEST_MESSAGE_KEY, latest_id);
 
               return {
                 loading_status: 'done',
                 loaded_pages: page,
                 all_loaded: json.data.length === 0,
-                messages: prev.messages.concat(json.data.filter(msg => !visited.has(msg.id)))
+                messages: prev.messages.concat(
+                  json.data.filter((msg) => !visited.has(msg.id)),
+                ),
               };
             });
           })
@@ -86,7 +99,7 @@ export class PushMessageViewer extends PureComponent {
             console.error(err);
             this.setState({
               loading_status: 'failed',
-              error_msg: err.message
+              error_msg: err.message,
             });
           });
       },
@@ -98,11 +111,14 @@ export class PushMessageViewer extends PureComponent {
   }
 
   reload_all() {
-    this.setState({
-      loaded_pages: 0,
-      messages: [],
-      latest_id: read_latest_id()
-    }, () => this.load_more_pages());
+    this.setState(
+      {
+        loaded_pages: 0,
+        messages: [],
+        latest_id: read_latest_id(),
+      },
+      () => this.load_more_pages(),
+    );
   }
 
   on_scroll(evt) {
@@ -145,22 +161,26 @@ export class PushMessageViewer extends PureComponent {
               token={this.props.token}
               show_sidebar={this.props.show_sidebar}
               color_picker={this.get_color_picker(msg.pid)}
-              cascade={!!msg.pid && index + 1 < list.length && list[index + 1].pid === msg.pid}
+              cascade={
+                !!msg.pid &&
+                index + 1 < list.length &&
+                list[index + 1].pid === msg.pid
+              }
             />
           </LazyLoad>
         ))}
-        {this.state.loading_status === 'done' && this.state.all_loaded &&
+        {this.state.loading_status === 'done' && this.state.all_loaded && (
           <p className="box box-tip">没有更多消息了</p>
-        }
-        {this.state.loading_status === 'loading' &&
+        )}
+        {this.state.loading_status === 'loading' && (
           <p className="box box-tip">加载中……</p>
-        }
-        {this.state.loading_status === 'failed' &&
+        )}
+        {this.state.loading_status === 'failed' && (
           <div className="box box-tip">
             <p>加载失败：{this.state.error_msg}</p>
             <a onClick={() => this.load_more_pages()}>重新加载</a>
           </div>
-        }
+        )}
       </div>
     );
   }
@@ -168,11 +188,15 @@ export class PushMessageViewer extends PureComponent {
 
 class PushMessage extends PureComponent {
   render() {
-    const show_pid = load_single_meta(this.props.show_sidebar, this.props.token);
+    const show_pid = load_single_meta(
+      this.props.show_sidebar,
+      this.props.token,
+    );
 
     /** @type {PushMessageData} */
     const msg = this.props.msg;
-    let content, style = null;
+    let content,
+      style = null;
 
     if (typeof msg.pid === 'number') {
       // markdown
@@ -182,12 +206,14 @@ class PushMessage extends PureComponent {
       const author = result ? result[1] : '';
       const colors = this.props.color_picker.get(author);
 
-      content = <HighlightedMarkdown
-        author={'[' + author + ']'}
-        text={msg.body}
-        color_picker={this.props.color_picker}
-        show_pid={show_pid}
-      />;
+      content = (
+        <HighlightedMarkdown
+          author={'[' + author + ']'}
+          text={msg.body}
+          color_picker={this.props.color_picker}
+          show_pid={show_pid}
+        />
+      );
 
       style = {
         '--box-bgcolor-light': colors[0],
@@ -200,22 +226,19 @@ class PushMessage extends PureComponent {
 
     return (
       <div
-        className={
-          "push-message-item" +
-          (this.props.cascade ? ' cascade' : '')
-        }
+        className={'push-message-item' + (this.props.cascade ? ' cascade' : '')}
       >
         <div key={msg.id} className="box push-message-detail" style={style}>
-          {this.props.is_new &&
+          {this.props.is_new && (
             <div className="flow-item-dot flow-item-dot-message" />
-          }
+          )}
           <div className="box-header">
             <Time stamp={msg.timestamp} short={true} />
             <b>{msg.title}</b>
           </div>
           <div className="box-content">{content}</div>
         </div>
-        {msg.pid && !this.props.cascade &&
+        {msg.pid && !this.props.cascade && (
           <FlowItemQuote
             pid={msg.pid}
             from_msg={true}
@@ -224,7 +247,7 @@ class PushMessage extends PureComponent {
             search_param={''}
             color_picker={this.props.color_picker}
           />
-        }
+        )}
       </div>
     );
   }
