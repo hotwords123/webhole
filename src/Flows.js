@@ -1557,7 +1557,7 @@ export class FlowItemQuote extends PureComponent {
             });
           })
           .catch((err) => {
-            if (('' + err).indexOf('找不到这条树洞') !== -1)
+            if (('' + err).indexOf('找不到这条树洞') !== -1 && !this.props.from_msg)
               this.setState({
                 loading_status: 'empty',
               });
