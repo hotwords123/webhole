@@ -193,7 +193,9 @@ export const API = {
   get_messages: async (page, token, push_only = false, since_id = -1) => {
     let response = await fetch(
       API_ROOT +
-        `contents/my_msgs?page=${page}&push_only=${push_only ? 1 : 0}&since_id=${since_id}` +
+        `contents/my_msgs?page=${page}&push_only=${
+          push_only ? 1 : 0
+        }&since_id=${since_id}` +
         API_VERSION_PARAM(),
       {
         headers: {

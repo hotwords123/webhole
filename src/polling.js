@@ -1,5 +1,4 @@
-
-import { API } from "./flows_api";
+import { API } from './flows_api';
 
 const LATEST_MESSAGE_KEY = '_LATEST_MESSAGE_ID';
 const MAX_DISPLAY_COUNT = 9;
@@ -18,8 +17,8 @@ export class PollingManager {
     this.fetch_messages_bound = this.fetch_messages.bind(this);
 
     this.pubSubKey = PubSub.subscribe(
-      "MessageCountShouldUpdate",
-      (msg, params = {}) => this.update(params.messages, params.callback_key)
+      'MessageCountShouldUpdate',
+      (msg, params = {}) => this.update(params.messages, params.callback_key),
     );
 
     this.setup_timer();
@@ -95,7 +94,7 @@ export class PollingManager {
 
     if (count !== this.unread_count) {
       this.unread_count = count;
-      PubSub.publish("MessageCountUpdate", count);
+      PubSub.publish('MessageCountUpdate', count);
     }
 
     return messages;
@@ -105,7 +104,12 @@ export class PollingManager {
     if (this.unread_count > MAX_DISPLAY_COUNT) return;
 
     try {
-      const json = await API.get_messages(1, this.token, true, read_latest_id());
+      const json = await API.get_messages(
+        1,
+        this.token,
+        true,
+        read_latest_id(),
+      );
       await this.update(json.data);
     } catch (err) {
       console.error(err);

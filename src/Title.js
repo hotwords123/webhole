@@ -26,7 +26,7 @@ class ControlBar extends PureComponent {
     this.on_message_update_bound = this.on_message_update.bind(this);
 
     this.polling_manager = new PollingManager({
-      token: this.props.token
+      token: this.props.token,
     });
 
     this.pubSubKey = null;
@@ -47,17 +47,20 @@ class ControlBar extends PureComponent {
       );
     }
 
-    this.pubSubKey = PubSub.subscribe("MessageCountUpdate", this.on_message_update_bound);
+    this.pubSubKey = PubSub.subscribe(
+      'MessageCountUpdate',
+      this.on_message_update_bound,
+    );
   }
 
   componentWillUnmount() {
     this.polling_manager.cleanup();
-    PubSub.unsubscribe("MessageCountUpdate", this.pubSubKey);
+    PubSub.unsubscribe('MessageCountUpdate', this.pubSubKey);
   }
 
   on_message_update(msg, count) {
     this.setState({
-      new_message_count: count
+      new_message_count: count,
     });
   }
 

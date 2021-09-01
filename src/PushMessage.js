@@ -51,7 +51,10 @@ export class PushMessageViewer extends PureComponent {
       false,
     );
 
-    this.pubSubKey = PubSub.subscribe("MessageCountUpdate", this.on_message_update_bound);
+    this.pubSubKey = PubSub.subscribe(
+      'MessageCountUpdate',
+      this.on_message_update_bound,
+    );
   }
 
   componentWillUnmount() {
@@ -80,7 +83,10 @@ export class PushMessageViewer extends PureComponent {
           .then((json) => {
             for (const msg of json.data) msg.variant = {};
 
-            return this.props.polling_manager.update(json.data, this.state.latest_id);
+            return this.props.polling_manager.update(
+              json.data,
+              this.state.latest_id,
+            );
           })
           .then((messages) => {
             this.setState((prev, props) => {
