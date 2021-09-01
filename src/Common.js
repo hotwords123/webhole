@@ -104,7 +104,7 @@ export class HighlightedMarkdown extends Component {
       {
         shouldProcessNode: (node) => node.name === 'img', // disable images
         processNode(node, children, index) {
-          return <div key={index}>[图片]</div>;
+          return <span key={index}>[图片]</span>;
         },
       },
       {
