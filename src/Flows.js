@@ -144,7 +144,7 @@ export function load_single_meta(show_sidebar, token) {
   return (pid, replace = false) => {
     pid = parseInt(pid);
     let color_picker = new ColorPicker();
-    let title_elem = '树洞 ' + pid;
+    let title_elem = '树洞 #' + pid;
     show_sidebar(
       title_elem,
       <div className="box box-tip">正在加载 #{pid}</div>,
