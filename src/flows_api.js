@@ -94,6 +94,10 @@ export const API = {
       });
   },
 
+  get_latest_visited_cid: (pid) => {
+    return 0; // WIP
+  },
+
   set_attention: async (pid, attention, token) => {
     let data = new URLSearchParams();
     data.append('pid', pid);
@@ -186,10 +190,10 @@ export const API = {
     return handle_response(response);
   },
 
-  get_messages: async (page, token, push_only = false) => {
+  get_messages: async (page, token, push_only = false, since_id = -1) => {
     let response = await fetch(
       API_ROOT +
-        `contents/my_msgs?page=${page}&push_only=${push_only ? 1 : 0}` +
+        `contents/my_msgs?page=${page}&push_only=${push_only ? 1 : 0}&since_id=${since_id}` +
         API_VERSION_PARAM(),
       {
         headers: {

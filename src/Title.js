@@ -4,8 +4,8 @@ import { InfoSidebar, PostForm } from './UserAction';
 import { TokenCtx } from './UserAction';
 
 import './Title.css';
-import { PushMessageViewer, read_latest_id } from './PushMessage';
-import { API } from './flows_api';
+import { PushMessageViewer } from './PushMessage';
+import { PollingManager } from './polling';
 
 const flag_re = /^\/\/setflag ([a-zA-Z0-9_]+)=(.*)$/;
 
@@ -14,18 +14,22 @@ class ControlBar extends PureComponent {
     super(props);
     this.state = {
       search_text: '',
-      has_new_message: false,
+      new_message_count: 0,
     };
     this.set_mode = props.set_mode;
-
-    this.polling_timer = null;
 
     this.on_change_bound = this.on_change.bind(this);
     this.on_keypress_bound = this.on_keypress.bind(this);
     this.do_refresh_bound = this.do_refresh.bind(this);
     this.do_attention_bound = this.do_attention.bind(this);
     this.do_hot_posts_bound = this.do_hot_posts.bind(this);
-    this.fetch_messages_bound = this.fetch_messages.bind(this);
+    this.on_message_update_bound = this.on_message_update.bind(this);
+
+    this.polling_manager = new PollingManager({
+      token: this.props.token
+    });
+
+    this.pubSubKey = null;
   }
 
   componentDidMount() {
@@ -42,7 +46,19 @@ class ControlBar extends PureComponent {
         },
       );
     }
-    this.setup_polling_timer();
+
+    this.pubSubKey = PubSub.subscribe("MessageCountUpdate", this.on_message_update_bound);
+  }
+
+  componentWillUnmount() {
+    this.polling_manager.cleanup();
+    PubSub.unsubscribe("MessageCountUpdate", this.pubSubKey);
+  }
+
+  on_message_update(msg, count) {
+    this.setState({
+      new_message_count: count
+    });
   }
 
   on_change(event) {
@@ -109,31 +125,6 @@ class ControlBar extends PureComponent {
       search_text: '热榜',
     });
     this.set_mode('search', '热榜');
-  }
-
-  setup_polling_timer() {
-    if (this.polling_timer) clearInterval(this.polling_timer);
-    const interval = parseInt(config.polling_interval);
-    if (interval > 0) {
-      setInterval(this.fetch_messages_bound, interval * 1000);
-      this.fetch_messages();
-    }
-  }
-
-  fetch_messages() {
-    if (this.state.has_new_message) return;
-    API.get_messages(1, this.props.token, true)
-      .then((json) => {
-        const prev_lastet_id = read_latest_id();
-        const lastet_id = Math.max(...json.data.map((msg) => msg.id));
-
-        if (!!prev_lastet_id && lastet_id > prev_lastet_id) {
-          this.setState({
-            has_new_message: true,
-          });
-        }
-      })
-      .catch((err) => console.error('Failed to fetch messages', err));
   }
 
   render() {
@@ -214,18 +205,20 @@ class ControlBar extends PureComponent {
               <a
                 className="no-underline control-btn"
                 onClick={() => {
-                  this.setState({ has_new_message: false });
                   this.props.show_sidebar(
                     '消息列表',
                     <PushMessageViewer
                       token={token}
                       show_sidebar={this.props.show_sidebar}
+                      polling_manager={this.polling_manager}
                     />,
                   );
                 }}
               >
-                {this.state.has_new_message && (
-                  <div className="control-btn-dot"></div>
+                {this.state.new_message_count > 0 && (
+                  <div className="control-btn-dot">
+                    {this.state.new_message_count}
+                  </div>
                 )}
                 <span className="icon icon-fire" />
                 <span className="control-btn-label">消息</span>

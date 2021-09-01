@@ -5,6 +5,7 @@ import LazyLoad from './react-lazyload/src';
 import { FlowItemQuote, load_single_meta } from './Flows';
 import './PushMessage.css';
 import { ColorPicker } from './color_picker';
+import { read_latest_id } from './polling';
 
 /**
  * @typedef {{
@@ -18,19 +19,8 @@ import { ColorPicker } from './color_picker';
  * }} PushMessageData
  */
 
-const LATEST_MESSAGE_KEY = '_LATEST_MESSAGE_ID';
-const MESSAGE_TYPE_MAP = {
-  1: '系统消息',
-  2: '回复我的',
-  4: '我关注的',
-};
-
 // todo: change icon to bell (control bar)
 // todo (low): choose what to show
-
-export function read_latest_id() {
-  return parseInt(localStorage.getItem(LATEST_MESSAGE_KEY)) || 0;
-}
 
 export class PushMessageViewer extends PureComponent {
   constructor(props) {
@@ -47,6 +37,10 @@ export class PushMessageViewer extends PureComponent {
     this.root = createRef();
     this.on_scroll_bound = this.on_scroll.bind(this);
     this.color_picker_map = new Map();
+
+    this.on_message_update_bound = this.on_message_update.bind(this);
+
+    this.pubSubKey = null;
   }
 
   componentDidMount() {
@@ -56,6 +50,8 @@ export class PushMessageViewer extends PureComponent {
       this.on_scroll_bound,
       false,
     );
+
+    this.pubSubKey = PubSub.subscribe("MessageCountUpdate", this.on_message_update_bound);
   }
 
   componentWillUnmount() {
@@ -64,6 +60,12 @@ export class PushMessageViewer extends PureComponent {
       this.on_scroll_bound,
       false,
     );
+
+    PubSub.unsubscribe(this.pubSubKey);
+  }
+
+  on_message_update(msg, count) {
+    //
   }
 
   load_page(page) {
@@ -74,23 +76,22 @@ export class PushMessageViewer extends PureComponent {
         loading_status: 'loading',
       },
       () => {
-        API.get_messages(page, this.props.token, false)
+        API.get_messages(page, this.props.token, true)
           .then((json) => {
+            for (const msg of json.data) msg.variant = {};
+
+            return this.props.polling_manager.update(json.data, this.state.latest_id);
+          })
+          .then((messages) => {
             this.setState((prev, props) => {
               const visited = new Set(prev.messages.map((msg) => msg.id));
-
-              const latest_id = json.data.reduce(
-                (x, msg) => Math.max(x, msg.id),
-                read_latest_id(),
-              );
-              localStorage.setItem(LATEST_MESSAGE_KEY, latest_id);
 
               return {
                 loading_status: 'done',
                 loaded_pages: page,
-                all_loaded: json.data.length === 0,
+                all_loaded: messages.length === 0,
                 messages: prev.messages.concat(
-                  json.data.filter((msg) => !visited.has(msg.id)),
+                  messages.filter((msg) => !visited.has(msg.id)),
                 ),
               };
             });
@@ -156,7 +157,7 @@ export class PushMessageViewer extends PureComponent {
             once={true}
           >
             <PushMessage
-              is_new={!!this.state.latest_id && msg.id > this.state.latest_id}
+              is_new={msg.variant.is_new}
               msg={msg}
               token={this.props.token}
               show_sidebar={this.props.show_sidebar}

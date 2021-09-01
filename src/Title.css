@@ -61,19 +61,24 @@
 
 .control-btn-dot {
     position: absolute;
-    top: 0;
+    top: -4px;
     right: 0;
-    width: 9px;
-    height: 9px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    font-size: 8px;
+    line-height: 14px;
+    text-align: center;
 }
 
 .control-btn-dot {
-    background-color: #ff9988;
+    background-color: #ff4444;
+    color: #ffffff;
 }
 .root-dark-mode .control-btn-dot {
-    background-color: #ee8877;
+    background-color: #ee3333;
+    color: #eeeeee;
 }
 
 .control-search {
