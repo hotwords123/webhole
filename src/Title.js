@@ -223,7 +223,7 @@ class ControlBar extends PureComponent {
                     {this.state.new_message_count}
                   </div>
                 )}
-                <span className="icon icon-fire" />
+                <span className="icon icon-bell" />
                 <span className="control-btn-label">消息</span>
               </a>
             )}

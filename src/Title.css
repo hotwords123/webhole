@@ -67,17 +67,17 @@
     height: 14px;
     border-radius: 50%;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
-    font-size: 8px;
+    font-size: 12px;
     line-height: 14px;
     text-align: center;
 }
 
 .control-btn-dot {
-    background-color: #ff4444;
+    background-color: #ff5555;
     color: #ffffff;
 }
 .root-dark-mode .control-btn-dot {
-    background-color: #ee3333;
+    background-color: #ee4444;
     color: #eeeeee;
 }
 
