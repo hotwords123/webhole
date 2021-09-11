@@ -1549,7 +1549,7 @@ export class FlowItemQuote extends PureComponent {
         loading_status: 'loading',
       },
       () => {
-        API.load_replies(this.props.pid, this.props.token, this.color_picker)
+        API.load_post(this.props.pid, this.props.token)
           .then((json) => {
             this.setState({
               loading_status: 'done',

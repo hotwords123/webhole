@@ -41,6 +41,26 @@ const handle_response = async (response, notify = false, add_v = true) => {
 };
 
 export const API = {
+  load_post: (pid, token) => {
+    pid = parseInt(pid);
+    return fetch(
+      API_ROOT + 'contents/post/detail?include_comment=0&pid=' + pid + API_VERSION_PARAM(),
+      {
+        headers: {
+          TOKEN: token,
+        },
+      },
+    )
+      .then(get_json)
+      .then((json) => {
+        if (json.code !== 1) {
+          throw new Error(json.msg);
+        }
+        json.post.variant = {};
+        return json;
+      });
+  },
+
   load_replies: (pid, token, color_picker) => {
     pid = parseInt(pid);
     return fetch(
